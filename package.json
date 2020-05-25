@@ -20,5 +20,9 @@
   "homepage": "https://github.com/VolodymyrKh/goit-node-js#readme",
   "devDependencies": {
     "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "uuid": "^8.1.0",
+    "yargs": "^15.3.1"
   }
 }
