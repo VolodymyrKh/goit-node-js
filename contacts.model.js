@@ -16,10 +16,10 @@ async function listContacts() {
 }
 
 
-async function getContactById(contactId) {
+async function getById(contactId) {
   const contacts = await listContacts();
   const contactById = contacts.find((contact) => contact.id === contactId);
-  return contactById;
+  return contactById || null;
 }
 
 async function removeContact(contactId) {
@@ -33,12 +33,13 @@ async function addContact(name, email, phone) {
   const id = uuidv4();
   const newContact = new Contact(id, name, email, phone);
   contacts.push(newContact);
-  return await writeFile(contactsPath, JSON.stringify(contacts));
+  await writeFile(contactsPath, JSON.stringify(contacts));
+  return newContact;
 }
 
 module.exports = {
   listContacts,
-  getContactById,
+  getById,  
   removeContact,
   addContact,
 };
