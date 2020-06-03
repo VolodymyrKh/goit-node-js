@@ -5,3 +5,9 @@ exports.userValidation = Joi.object({
     email: Joi.string().required(),
     phone: Joi.string().required(),
 })
+
+exports.updateUserValidation = Joi.object({
+    name: Joi.string(),
+    email: Joi.string(),
+    phone: Joi.string(),
+})

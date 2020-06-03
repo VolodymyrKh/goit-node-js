@@ -1,9 +1,10 @@
-const { userValidation } = require("./contact.validator");
+const { userValidation, updateUserValidation } = require("./contact.validator");
 const {
   listContacts,
   getById,
   removeContact,
   addContact,
+  updateContact,
 } = require("./contacts.model");
 
 async function getContacts(req, res) {
@@ -31,8 +32,31 @@ async function createContact(req, res) {
   }
 }
 
+async function deleteContactById(req, res) {
+  const contactToRemove = await removeContact(req.params.id);
+  contactToRemove
+    ? res.status(200).json({ message: "contact deleted" })
+    : res.status(404).json({ message: "Contact not found" });
+}
+
+async function updateContactById(req, res) {
+  const { error } = updateUserValidation.validate(req.body);
+  if (error) {
+    res.status(400).json({ message: error.message });
+  } else if (!Object.keys(req.body).length) {
+    res.status(404).json({ message: "missing fields" });
+  } else {
+    const updatedContact = await updateContact(req.params.id, req.body);
+    updatedContact
+      ? res.status(201).json(updatedContact)
+      : res.status(404).json({ message: "Contact not found" });
+  }
+}
+
 module.exports = {
   getContacts,
   getContactById,
   createContact,
+  deleteContactById,
+  updateContactById,
 };
