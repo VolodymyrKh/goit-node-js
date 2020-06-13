@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  getContacts,
+  // getContacts,
   getContactById,
   createContact,
   deleteContactById,
@@ -8,7 +8,7 @@ const {
 } = require("./contacts.controller");
 
 const contactRouter = express.Router();
-contactRouter.get("/", getContacts);
+// contactRouter.get("/", getContacts);
 contactRouter.get("/:id", getContactById);
 contactRouter.post("/", createContact);
 contactRouter.delete("/:id", deleteContactById);

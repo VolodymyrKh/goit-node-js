@@ -7,10 +7,10 @@ const {
   updateContact,
 } = require("./contacts.model");
 
-async function getContacts(req, res) {
-  const contacts = await listContacts();
-  res.json(contacts);
-}
+// async function getContacts(req, res) {
+//   const contacts = await listContacts();
+//   res.json(contacts);
+// }
 
 async function getContactById(req, res) {
   const contact = await getById(req.params.id);
@@ -54,7 +54,7 @@ async function updateContactById(req, res) {
 }
 
 module.exports = {
-  getContacts,
+  // getContacts,
   getContactById,
   createContact,
   deleteContactById,
