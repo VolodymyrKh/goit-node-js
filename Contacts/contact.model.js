@@ -7,12 +7,11 @@ const contactSchema = new Schema({
     type: String,
     required: true,
     validate: (value) => value.includes("@"),
-    unique: true,
-  },
+    },
   phone: { type: String, required: true },
   subscription: { type: String, required: true },
   password: { type: String, required: true },
-  token: String,
+  token: String
 });
 
 class Contact {
@@ -20,8 +19,8 @@ class Contact {
     this.contact = mongoose.model("Contact", contactSchema);
   }
 
-  getContacts() {
-    return this.contact.find();
+  getContacts(query) {
+    return this.contact.find(query);
   }
 
   createContact(contactToAdd) {
@@ -31,6 +30,16 @@ class Contact {
   getContactById(id){
      return this.contact.findById(id)
   }
+
+  deleteContactById(id){
+     return this.contact.findByIdAndDelete(id)    
+  } 
+
+  updateContactById(id, itemsToUpdate) {
+    return this.contact.findByIdAndUpdate(id, {$set: itemsToUpdate}, {new: true})
+  }
 }
+
+
 
 module.exports = new Contact();

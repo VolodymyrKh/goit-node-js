@@ -9,7 +9,7 @@ const userValidation = Joi.object({
   token: Joi.string(),
 });
 
-exports.updateUserValidation = Joi.object({
+const updateUserValidation = Joi.object({
   name: Joi.string(),
   email: Joi.string(),
   phone: Joi.string(),
@@ -23,7 +23,18 @@ exports.userValidationMiddleware = (req, res, next) => {
   if (error) {
     res
       .status(400)
-      .json({ message: `missing required '${error.details[0].path[0]}' field` });
+      .json({
+        message: `missing required '${error.details[0].path[0]}' field`,
+      });
+    return;
+  }
+  next();
+};
+
+exports.updateUserValidationMiddleware = (req, res, next) => {
+  const { error } = updateUserValidation.validate(req.body);
+  if (error) {
+    res.status(400).json({ message: error.message });
     return;
   }
   next();

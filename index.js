@@ -1,3 +1,6 @@
+// PORT = 3000
+// DB_URI = mongodb+srv://GO_IT:GO_IT@cluster0-n5isy.mongodb.net/db-contacts?retryWrites=true&w=majority
+
 const dotenv = require("dotenv");
 dotenv.config();
 const express = require("express");
