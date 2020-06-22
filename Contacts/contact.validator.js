@@ -7,8 +7,6 @@ const contactValidation = Joi.object({
 });
 
 const updateContactValidation = Joi.object({
-  email: Joi.string(),
-  password: Joi.string(),
   subscription: Joi.string().valid("free", "pro", "premium"),
 });
 

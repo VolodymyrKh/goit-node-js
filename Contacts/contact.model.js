@@ -32,7 +32,7 @@ class Contact {
   }
 
   getContacts(query) {
-    return this.contact.find(query, { password: false });
+    return this.contact.find(query, { password: false, token: false }).limit(10);
   }
 
   createContact(contactToAdd) {

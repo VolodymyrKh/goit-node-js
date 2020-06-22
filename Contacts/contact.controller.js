@@ -2,7 +2,11 @@ const Contact = require("./contact.model");
 
 exports.getContactsController = async (req, res) => {
   try {
-    const contacts = await Contact.getContacts(req.query);
+    const { sub: subscription, ...data } = req.query;
+    let query;
+    subscription ? (query = { subscription, ...data }) : (query = req.query);
+    
+    const contacts = await Contact.getContacts(query);
     res.json(contacts);
   } catch (error) {
     console.log(error);
@@ -53,8 +57,8 @@ exports.deleteContactByIdController = async (req, res) => {
 
 exports.updateContactByIdController = async (req, res) => {
   try {
-    const { id } = req.params;
-    await Contact.updateContactById(id, req.body);
+    const { _id } = req.contact;
+    await Contact.updateContactById(_id, req.body);
     res.status(201).json({ message: "contact was updated" });
   } catch (error) {
     res.status(500).send("Server error");

@@ -15,6 +15,7 @@ const {
   updateUserValidationMiddleware,
 } = require("./contact.validator");
 
+
 const contactRouter = Router();
 
 contactRouter.get(
@@ -23,6 +24,7 @@ contactRouter.get(
   roleMiddleware(["USER", "ADMIN"]),
   getContactsController
 );
+
 contactRouter.post(
   "/",
   tokenMiddleware,
@@ -30,30 +32,35 @@ contactRouter.post(
   contactValidationMiddleware,
   createContactController
 );
+
+contactRouter.patch(
+  "/",
+  tokenMiddleware,
+  roleMiddleware(["USER", "ADMIN"]),
+  updateUserValidationMiddleware,
+  updateContactByIdController
+);
+
 contactRouter.get(
   "/current",
   tokenMiddleware,
   roleMiddleware(["USER", "ADMIN"]),
   getCurrentContactController
 );
+
 contactRouter.get(
   "/:id",
   tokenMiddleware,
   roleMiddleware(["USER", "ADMIN"]),
   getContactByIdController
 );
+
 contactRouter.delete(
   "/:id",
   tokenMiddleware,
   roleMiddleware(["ADMIN"]),
   deleteContactByIdController
 );
-contactRouter.patch(
-  "/:id",
-  tokenMiddleware,
-  roleMiddleware(["ADMIN"]),
-  updateUserValidationMiddleware,
-  updateContactByIdController
-);
+
 
 exports.contactRouter = contactRouter;
