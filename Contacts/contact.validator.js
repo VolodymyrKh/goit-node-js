@@ -1,38 +1,30 @@
 const Joi = require("@hapi/joi");
 
-const userValidation = Joi.object({
-  name: Joi.string().required(),
+const contactValidation = Joi.object({
   email: Joi.string().required(),
-  phone: Joi.string().required(),
-  subscription: Joi.string().required(),
   password: Joi.string().required(),
-  token: Joi.string(),
+  subscription: Joi.string().valid("free", "pro", "premium"),
 });
 
-const updateUserValidation = Joi.object({
-  name: Joi.string(),
+const updateContactValidation = Joi.object({
   email: Joi.string(),
-  phone: Joi.string(),
-  subscription: Joi.string(),
   password: Joi.string(),
-  token: Joi.string(),
+  subscription: Joi.string().valid("free", "pro", "premium"),
 });
 
-exports.userValidationMiddleware = (req, res, next) => {
-  const { error } = userValidation.validate(req.body);
+exports.contactValidationMiddleware = async (req, res, next) => {
+  const { error } = await contactValidation.validate(req.body);
   if (error) {
-    res
-      .status(400)
-      .json({
-        message: `missing required '${error.details[0].path[0]}' field`,
-      });
+    res.status(400).json({
+      message: error.message
+    });
     return;
   }
   next();
 };
 
-exports.updateUserValidationMiddleware = (req, res, next) => {
-  const { error } = updateUserValidation.validate(req.body);
+exports.updateUserValidationMiddleware = async (req, res, next) => {
+  const { error } = await updateContactValidation.validate(req.body);
   if (error) {
     res.status(400).json({ message: error.message });
     return;

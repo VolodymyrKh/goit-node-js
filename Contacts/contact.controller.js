@@ -15,9 +15,18 @@ exports.createContactController = async (req, res) => {
     const createdContact = await Contact.createContact(req.body);
     res.status(201).json(createdContact);
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).send("Server error");
   }
+};
+
+exports.getCurrentContactController = (req, res) => {
+  if (!req.contact) {
+    req.status(401).json({ message: "Not authorized" });
+    return;
+  }
+  const { email, subscription } = req.contact;
+  res.status(200).json({ email, subscription });
 };
 
 exports.getContactByIdController = async (req, res) => {

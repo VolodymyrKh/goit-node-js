@@ -1,20 +1,59 @@
 const { Router } = require("express");
+const { tokenMiddleware } = require("../Services/token.middleware");
+const { roleMiddleware } = require("../Services/role.middleware");
 const {
   getContactsController,
   createContactController,
+  getCurrentContactController,
   getContactByIdController,
   deleteContactByIdController,
-  updateContactByIdController
+  updateContactByIdController,
 } = require("./contact.controller");
 
-const { userValidationMiddleware, updateUserValidationMiddleware } = require("./contact.validator");
+const {
+  contactValidationMiddleware,
+  updateUserValidationMiddleware,
+} = require("./contact.validator");
 
 const contactRouter = Router();
 
-contactRouter.get("/", getContactsController);
-contactRouter.post("/", userValidationMiddleware, createContactController);
-contactRouter.get("/:id", getContactByIdController);
-contactRouter.delete("/:id", deleteContactByIdController);
-contactRouter.patch("/:id", updateUserValidationMiddleware, updateContactByIdController);
+contactRouter.get(
+  "/",
+  tokenMiddleware,
+  roleMiddleware(["USER", "ADMIN"]),
+  getContactsController
+);
+contactRouter.post(
+  "/",
+  tokenMiddleware,
+  roleMiddleware(["ADMIN"]),
+  contactValidationMiddleware,
+  createContactController
+);
+contactRouter.get(
+  "/current",
+  tokenMiddleware,
+  roleMiddleware(["USER", "ADMIN"]),
+  getCurrentContactController
+);
+contactRouter.get(
+  "/:id",
+  tokenMiddleware,
+  roleMiddleware(["USER", "ADMIN"]),
+  getContactByIdController
+);
+contactRouter.delete(
+  "/:id",
+  tokenMiddleware,
+  roleMiddleware(["ADMIN"]),
+  deleteContactByIdController
+);
+contactRouter.patch(
+  "/:id",
+  tokenMiddleware,
+  roleMiddleware(["ADMIN"]),
+  updateUserValidationMiddleware,
+  updateContactByIdController
+);
 
 exports.contactRouter = contactRouter;
