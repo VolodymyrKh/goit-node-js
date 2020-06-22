@@ -2,16 +2,20 @@ const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 
 const contactSchema = new Schema({
-  name: { type: String, required: true },
   email: {
     type: String,
     required: true,
     validate: (value) => value.includes("@"),
-    },
-  phone: { type: String, required: true },
-  subscription: { type: String, required: true },
+    unique: true,
+  },
   password: { type: String, required: true },
-  token: String
+  subscription: {
+    type: String,
+    enum: ["free", "pro", "premium"],
+    default: "free",
+  },
+  role: String,
+  token: { type: String, default: "" },
 });
 
 class Contact {
@@ -19,27 +23,37 @@ class Contact {
     this.contact = mongoose.model("Contact", contactSchema);
   }
 
+  existContactEmail(query) {
+    return this.contact.exists(query);
+  }
+
+  getContactByQuery(query) {
+    return this.contact.findOne(query);
+  }
+
   getContacts(query) {
-    return this.contact.find(query);
+    return this.contact.find(query, { password: false, token: false }).limit(10);
   }
 
   createContact(contactToAdd) {
     return this.contact.create(contactToAdd);
   }
 
-  getContactById(id){
-     return this.contact.findById(id)
+  getContactById(id) {
+    return this.contact.findById(id, { password: false });
   }
 
-  deleteContactById(id){
-     return this.contact.findByIdAndDelete(id)    
-  } 
+  deleteContactById(id) {
+    return this.contact.findByIdAndDelete(id);
+  }
 
   updateContactById(id, itemsToUpdate) {
-    return this.contact.findByIdAndUpdate(id, {$set: itemsToUpdate}, {new: true})
+    return this.contact.findByIdAndUpdate(
+      id,
+      { $set: itemsToUpdate },
+      { new: true }
+    );
   }
 }
-
-
 
 module.exports = new Contact();

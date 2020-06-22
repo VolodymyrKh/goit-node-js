@@ -2,7 +2,11 @@ const Contact = require("./contact.model");
 
 exports.getContactsController = async (req, res) => {
   try {
-    const contacts = await Contact.getContacts(req.query);
+    const { sub: subscription, ...data } = req.query;
+    let query;
+    subscription ? (query = { subscription, ...data }) : (query = req.query);
+    
+    const contacts = await Contact.getContacts(query);
     res.json(contacts);
   } catch (error) {
     console.log(error);
@@ -15,9 +19,18 @@ exports.createContactController = async (req, res) => {
     const createdContact = await Contact.createContact(req.body);
     res.status(201).json(createdContact);
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     res.status(500).send("Server error");
   }
+};
+
+exports.getCurrentContactController = (req, res) => {
+  if (!req.contact) {
+    req.status(401).json({ message: "Not authorized" });
+    return;
+  }
+  const { email, subscription } = req.contact;
+  res.status(200).json({ email, subscription });
 };
 
 exports.getContactByIdController = async (req, res) => {
@@ -44,8 +57,8 @@ exports.deleteContactByIdController = async (req, res) => {
 
 exports.updateContactByIdController = async (req, res) => {
   try {
-    const { id } = req.params;
-    await Contact.updateContactById(id, req.body);
+    const { _id } = req.contact;
+    await Contact.updateContactById(_id, req.body);
     res.status(201).json({ message: "contact was updated" });
   } catch (error) {
     res.status(500).send("Server error");
