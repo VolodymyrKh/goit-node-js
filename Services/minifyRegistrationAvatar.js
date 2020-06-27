@@ -1,7 +1,7 @@
 const imagemin = require("imagemin");
 const imageminJpegtran = require("imagemin-jpegtran");
 const imageminPngquant = require("imagemin-pngquant");
-const path = require('path')
+const path = require("path");
 const { promises: fsPromises } = require("fs");
 
 exports.minifyRegistrationAvatar = async () => {
@@ -19,5 +19,5 @@ exports.minifyRegistrationAvatar = async () => {
 
   fsPromises.unlink(file[0].sourcePath);
 
-    return path.basename(file[0].sourcePath)
+  return path.basename(file[0].sourcePath);
 };

@@ -1,11 +1,11 @@
 const Contact = require("../Contacts/contact.model");
 const bcrypt = require("bcrypt");
 const { createToken } = require("../Services/create.token");
-const {createAvatar} = require('../Services/generate.avatar')
+const { createAvatar } = require("../Services/generate.avatar");
 
-const {minifyRegistrationAvatar} = require('../Services/minifyRegistrationAvatar') 
-
-
+const {
+  minifyRegistrationAvatar,
+} = require("../Services/minifyRegistrationAvatar");
 
 exports.registrationController = async (req, res) => {
   try {
@@ -24,12 +24,12 @@ exports.registrationController = async (req, res) => {
         ...req.body,
         password: hashedPassword,
         role: "USER",
-        avatarURL:  `http://localhost:3000/images/${avatarName}`
+        avatarURL: `http://localhost:3000/images/${avatarName}`,
       };
-      
+
       const conact = await Contact.createContact(contactToAdd);
       const { email, subscription, avatarURL } = conact;
-      
+
       res.status(201).json({ user: { email, subscription, avatarURL } });
     }
   } catch (error) {

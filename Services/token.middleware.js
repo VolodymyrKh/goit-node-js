@@ -16,6 +16,7 @@ exports.tokenMiddleware = async (req, res, next) => {
       return;
     }
     req.contact = contact;
+    // console.log(contact)
 
     next();
   } catch (error) {
