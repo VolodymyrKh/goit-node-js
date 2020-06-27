@@ -1,6 +1,11 @@
 const Contact = require("../Contacts/contact.model");
 const bcrypt = require("bcrypt");
 const { createToken } = require("../Services/create.token");
+const {createAvatar} = require('../Services/generate.avatar')
+
+const {minifyRegistrationAvatar} = require('../Services/minifyRegistrationAvatar') 
+
+
 
 exports.registrationController = async (req, res) => {
   try {
@@ -11,14 +16,21 @@ exports.registrationController = async (req, res) => {
       res.status(409).json({ message: "Email in use" });
     } else {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+      await createAvatar(req.body.email); // Create avatar + write to Tmp
+      const avatarName = await minifyRegistrationAvatar(); // minify avatar + put from Tmp to Public/Images + remove from Tmp
+
       const contactToAdd = {
         ...req.body,
         password: hashedPassword,
         role: "USER",
+        avatarURL:  `http://localhost:3000/images/${avatarName}`
       };
+      
       const conact = await Contact.createContact(contactToAdd);
-      const { email, subscription } = conact;
-      res.status(201).json({ user: { email, subscription } });
+      const { email, subscription, avatarURL } = conact;
+      
+      res.status(201).json({ user: { email, subscription, avatarURL } });
     }
   } catch (error) {
     res.status(500).send("Internal server error");

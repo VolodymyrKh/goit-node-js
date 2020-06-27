@@ -25,6 +25,7 @@ const runServer = async () => {
     app.use(cors(corsOptions));
     app.use(morgan("combined"));
     app.use(express.json());
+    app.use("/images", express.static('Public/Images'))
     app.use("/contacts", contactRouter);
     app.use("/auth", authRouter);
 
