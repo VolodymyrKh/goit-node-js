@@ -36,7 +36,7 @@ exports.registrationController = async (req, res) => {
         verificationToken,
       } = await Contact.createContact(contactToAdd);
 
-      await sendVerivicationMail(verificationToken, email)
+      await sendVerivicationMail(verificationToken, email);
 
       res.status(201).json({ user: { email, subscription, avatarURL } });
     }
@@ -89,6 +89,22 @@ exports.logoutController = async (req, res) => {
   }
 };
 
-exports.verificationController = async (req, res) =>{
-  
-} 
+exports.verificationController = async (req, res) => {
+  const verificationToken = req.params.verificationToken;
+  if (!verificationToken) {
+    res.status(401).send("Token was not provided");
+    return;
+  }
+  try {
+    const contact = await Contact.getContactByQuery({ verificationToken });
+    if (!contact) {
+      res.status(404).send("Contact not found");
+      return;
+    }
+    await Contact.updateContactById(contact._id, { verificationToken: null });
+    res.status(200).send("Your account is verified");
+  } catch (error) {
+    res.status(500).send("Internal server error");
+    console.log(error);
+  }
+};
