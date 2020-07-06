@@ -8,6 +8,7 @@ const {
   registrationController,
   loginController,
   logoutController,
+  verificationController
 } = require("./auth.controller");
 
 const authRouter = Router();
@@ -19,5 +20,6 @@ authRouter.post(
 );
 authRouter.post("/login", contactLoginValidationMiddleware, loginController);
 authRouter.post("/logout", tokenMiddleware, logoutController);
+authRouter.get('/verify/:verificationToken', verificationController)
 
 exports.authRouter = authRouter;

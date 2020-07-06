@@ -1,11 +1,12 @@
 const Contact = require("../Contacts/contact.model");
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
 const { createToken } = require("../Services/create.token");
 const { createAvatar } = require("../Services/generate.avatar");
-
 const {
   minifyRegistrationAvatar,
 } = require("../Services/minifyRegistrationAvatar");
+const { sendVerivicationMail } = require("../Services/mail.verification");
 
 exports.registrationController = async (req, res) => {
   try {
@@ -25,10 +26,17 @@ exports.registrationController = async (req, res) => {
         password: hashedPassword,
         role: "USER",
         avatarURL: `http://localhost:3000/images/${avatarName}`,
+        verificationToken: uuidv4(),
       };
 
-      const conact = await Contact.createContact(contactToAdd);
-      const { email, subscription, avatarURL } = conact;
+      const {
+        email,
+        subscription,
+        avatarURL,
+        verificationToken,
+      } = await Contact.createContact(contactToAdd);
+
+      await sendVerivicationMail(verificationToken, email)
 
       res.status(201).json({ user: { email, subscription, avatarURL } });
     }
@@ -50,6 +58,11 @@ exports.loginController = async (req, res) => {
     const isPassworValid = await bcrypt.compare(password, contact.password);
     if (!isPassworValid) {
       res.status(401).send("Email or password is wrong");
+      return;
+    }
+    const { verificationToken } = contact;
+    if (verificationToken) {
+      res.status(403).send("Email is not verified");
       return;
     }
     const contactToken = await createToken(contact._id);
@@ -75,3 +88,7 @@ exports.logoutController = async (req, res) => {
     console.log(error);
   }
 };
+
+exports.verificationController = async (req, res) =>{
+  
+} 
