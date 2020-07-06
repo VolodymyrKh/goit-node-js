@@ -14,6 +14,7 @@ const contactSchema = new Schema({
     enum: ["free", "pro", "premium"],
     default: "free",
   },
+  avatarURL: String,
   role: String,
   token: { type: String, default: "" },
 });

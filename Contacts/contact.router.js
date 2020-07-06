@@ -1,6 +1,10 @@
 const { Router } = require("express");
 const { tokenMiddleware } = require("../Services/token.middleware");
 const { roleMiddleware } = require("../Services/role.middleware");
+const { avatarUploader } = require("../Services/avatarUploderPatchMiddleware");
+const {
+  minifyPatchAvatar,
+} = require("../Services/avatarMinifyPatchMiddleware");
 const {
   getContactsController,
   createContactController,
@@ -14,7 +18,6 @@ const {
   contactValidationMiddleware,
   updateUserValidationMiddleware,
 } = require("./contact.validator");
-
 
 const contactRouter = Router();
 
@@ -31,6 +34,16 @@ contactRouter.post(
   roleMiddleware(["ADMIN"]),
   contactValidationMiddleware,
   createContactController
+);
+
+contactRouter.patch(
+  "/avatars",
+  tokenMiddleware,
+  roleMiddleware(["USER", "ADMIN"]),
+  avatarUploader().single("avatar"),
+  minifyPatchAvatar,
+
+  updateContactByIdController
 );
 
 contactRouter.patch(
@@ -61,6 +74,5 @@ contactRouter.delete(
   roleMiddleware(["ADMIN"]),
   deleteContactByIdController
 );
-
 
 exports.contactRouter = contactRouter;
