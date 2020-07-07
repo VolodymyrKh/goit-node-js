@@ -1,11 +1,12 @@
 const Contact = require("../Contacts/contact.model");
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
 const { createToken } = require("../Services/create.token");
 const { createAvatar } = require("../Services/generate.avatar");
-
 const {
   minifyRegistrationAvatar,
 } = require("../Services/minifyRegistrationAvatar");
+const { sendVerivicationMail } = require("../Services/mail.verification");
 
 exports.registrationController = async (req, res) => {
   try {
@@ -25,10 +26,17 @@ exports.registrationController = async (req, res) => {
         password: hashedPassword,
         role: "USER",
         avatarURL: `http://localhost:3000/images/${avatarName}`,
+        verificationToken: uuidv4(),
       };
 
-      const conact = await Contact.createContact(contactToAdd);
-      const { email, subscription, avatarURL } = conact;
+      const {
+        email,
+        subscription,
+        avatarURL,
+        verificationToken,
+      } = await Contact.createContact(contactToAdd);
+
+      await sendVerivicationMail(verificationToken, email);
 
       res.status(201).json({ user: { email, subscription, avatarURL } });
     }
@@ -52,6 +60,11 @@ exports.loginController = async (req, res) => {
       res.status(401).send("Email or password is wrong");
       return;
     }
+    const { verificationToken } = contact;
+    if (verificationToken) {
+      res.status(403).send("Email is not verified");
+      return;
+    }
     const contactToken = await createToken(contact._id);
     await Contact.updateContactById(contact._id, { token: contactToken });
 
@@ -72,6 +85,26 @@ exports.logoutController = async (req, res) => {
     res.status(204).send();
   } catch (error) {
     res.status(401).json({ message: "Not authorized" });
+    console.log(error);
+  }
+};
+
+exports.verificationController = async (req, res) => {
+  const verificationToken = req.params.verificationToken;
+  if (!verificationToken) {
+    res.status(401).send("Token was not provided");
+    return;
+  }
+  try {
+    const contact = await Contact.getContactByQuery({ verificationToken });
+    if (!contact) {
+      res.status(404).send("Contact not found");
+      return;
+    }
+    await Contact.updateContactById(contact._id, { verificationToken: null });
+    res.status(200).send("Your account is verified");
+  } catch (error) {
+    res.status(500).send("Internal server error");
     console.log(error);
   }
 };

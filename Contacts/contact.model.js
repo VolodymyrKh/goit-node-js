@@ -17,6 +17,7 @@ const contactSchema = new Schema({
   avatarURL: String,
   role: String,
   token: { type: String, default: "" },
+  verificationToken: String,
 });
 
 class Contact {
